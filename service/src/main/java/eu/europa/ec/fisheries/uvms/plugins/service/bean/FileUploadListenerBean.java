@@ -65,6 +65,7 @@ public class FileUploadListenerBean {
     private void init(){
         setUpScheduler(workLoader.getSchedulerConfig());
         Set<ModuleWorkConfiguration> works = workLoader.getWorks();
+        LOG.info("\n\n--- THE UPLOADER MODULE WILL BE LISTENING TO SCHEDULED WORKS UNDER THE MAIN DIR : {}",workLoader.getMainDir());
         if(CollectionUtils.isNotEmpty(works)){
             checkWorkingDirectoriesExistence(works);
             logWorks(works);

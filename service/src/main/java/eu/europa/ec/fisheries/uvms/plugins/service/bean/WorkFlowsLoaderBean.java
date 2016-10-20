@@ -42,50 +42,46 @@ public class WorkFlowsLoaderBean {
     @PostConstruct
     public void loadFromProperties() throws UploaderConfigurationException {
         CompositeConfiguration props = propsBean.getConfigProps();
-        works           = new HashSet<>();
+        works = new HashSet<>();
         schedulerConfig = props.getString(UploaderConstants.JOB_SCHEDULER_CONFIG_KEY);
-        mainDir         = props.getString(UploaderConstants.UPLOADER_MAIN_DIR_KEY);
+        mainDir = props.getString(UploaderConstants.UPLOADER_MAIN_DIR_KEY);
         if (StringUtils.isEmpty(mainDir)) {
             throw new UploaderConfigurationException(UploaderConstants.MAIN_DIR_EXC_MESSAGE);
         }
         List<String> supportedModules = Arrays.asList((props.getString(UploaderConstants.SUPPORTED_MODULES_KEY)).split(UploaderConstants.COMMA));
         for (String moduleName : supportedModules) {
-            Map<String, String> directories = extractWorkDirectoriesForModuleName(moduleName, props);
-            if (checkAllNeededDirectoriesAreCreated(directories)) {
-                works.add(buildWorkConfigurationForModule(moduleName, directories, props));
-            } else {
-                throw new UploaderConfigurationException(UploaderConstants.NEEDED_MORE_DIRS_EXC + moduleName + UploaderConstants.MORE_CONFIGURATION_IS_NEEDED);
-            }
+            works.add(buildWorkConfigurationForModule(moduleName, createNeededDirectoriesEntries(moduleName), props));
         }
     }
 
-    private boolean checkAllNeededDirectoriesAreCreated(Map<String, String> directories) {
-        if (directories.get(UploaderConstants.UPLOAD) == null
-                || directories.get(UploaderConstants.PROCESSED) == null
-                || directories.get(UploaderConstants.REFUSED) == null) {
-            return false;
-        }
-        return true;
+    private Map<String, String> createNeededDirectoriesEntries(String moduleName) {
+        Map<String, String> dirsMap = new HashMap<>();
+        StringBuilder strBuild = new StringBuilder();
+        dirsMap.put(UploaderConstants.UPLOAD,    createPathForFolderType(moduleName, strBuild, UploaderConstants.UPLOAD));
+        dirsMap.put(UploaderConstants.PROCESSED, createPathForFolderType(moduleName, strBuild, UploaderConstants.PROCESSED));
+        dirsMap.put(UploaderConstants.REFUSED,   createPathForFolderType(moduleName, strBuild, UploaderConstants.REFUSED));
+        dirsMap.put(UploaderConstants.FAILED,    createPathForFolderType(moduleName, strBuild, UploaderConstants.FAILED));
+        return dirsMap;
+    }
+
+    private String createPathForFolderType(String moduleName, StringBuilder strBuild, String dir) {
+        strBuild.setLength(0);
+        return strBuild.append(mainDir).append(UploaderConstants.ESCAPED_SLASH).append(moduleName).append(UploaderConstants.ESCAPED_SLASH).append(dir).toString();
     }
 
     private ModuleWorkConfiguration buildWorkConfigurationForModule(String moduleName, Map<String, String> directories, CompositeConfiguration props) throws UploaderConfigurationException {
         Set<String> supportedFiles;
         try {
-            supportedFiles = new HashSet<>((List<String>)props.getProperty(moduleName+UploaderConstants.DOT_UPLOAD_SUPPORTED_FILES_KEY));
-        } catch(ClassCastException | NullPointerException ex){
+            supportedFiles = new HashSet<>((List<String>) props.getProperty(moduleName + UploaderConstants.DOT_UPLOAD_SUPPORTED_FILES_KEY));
+        } catch (ClassCastException | NullPointerException ex) {
             throw new UploaderConfigurationException(UploaderConstants.NOT_CONFIGURED_SUPPORTED_FILES_FOR_MODULE
                     + moduleName + UploaderConstants.MORE_CONFIGURATION_IS_NEEDED);
         }
-        return new ModuleWorkConfiguration(moduleName,directories, supportedFiles);
+        return new ModuleWorkConfiguration(moduleName, directories, supportedFiles);
     }
 
-    private Map<String, String> extractWorkDirectoriesForModuleName(String moduleName, CompositeConfiguration props) {
-        Map<String, String> dirsMap = new HashMap<>();
-        dirsMap.put(UploaderConstants.UPLOAD,    props.getString(moduleName + UploaderConstants.UPLOAD_DOT_DIR_KEY));
-        dirsMap.put(UploaderConstants.REFUSED,   props.getString(moduleName + UploaderConstants.REFUSED_DOT_DIR_KEY));
-        dirsMap.put(UploaderConstants.PROCESSED, props.getString(moduleName + UploaderConstants.PROCESSED_DOT_DIR_KEY));
-        dirsMap.put(UploaderConstants.FAILED,    props.getString(moduleName + UploaderConstants.FAILED_DOT_DIR_KEY));
-        return dirsMap;
+    public String getMainDir(){
+        return mainDir;
     }
 
     public Set<ModuleWorkConfiguration> getWorks() {

@@ -9,8 +9,10 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.plugins.mapper.ServiceMapper;
 import eu.europa.ec.fisheries.uvms.plugins.producer.PluginMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.service.UploaderTimerService;
 import eu.europa.ec.fisheries.uvms.plugins.service.bean.FileHandlerBean;
-import eu.europa.ec.fisheries.uvms.plugins.service.bean.UploadExchangeServiceBean;
+import eu.europa.ec.fisheries.uvms.plugins.service.bean.WorkFlowsLoaderBean;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,26 +24,30 @@ import java.util.Map;
 
 @Singleton
 @Startup
-@DependsOn({"PluginMessageProducer", "FileHandlerBean"})
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+@DependsOn({"PluginMessageProducer", "FileHandlerBean", "UploaderTimerServiceBean", "WorkFlowsLoaderBean"})
 public class StartupBean extends PluginDataHolder {
 
     final static Logger LOG = LoggerFactory.getLogger(StartupBean.class);
 
     private final static int MAX_NUMBER_OF_TRIES = 10;
-    private boolean isRegistered = false;
-    private boolean isEnabled = false;
-    private boolean waitingForResponse = false;
-    private int numberOfTriesExecuted = 0;
-    private String REGISTER_CLASS_NAME = "";
+    private boolean isRegistered                 = false;
+    private boolean isEnabled                    = false;
+    private boolean waitingForResponse           = false;
+    private int numberOfTriesExecuted            = 0;
+    private String REGISTER_CLASS_NAME           = StringUtils.EMPTY;
 
     @EJB
     PluginMessageProducer messageProducer;
 
     @EJB
-    UploadExchangeServiceBean service;
+    FileHandlerBean fileHandler;
 
     @EJB
-    FileHandlerBean fileHandler;
+    UploaderTimerService timerServBean;
+
+    @EJB
+    WorkFlowsLoaderBean workLoader;
 
     private CapabilityListType capabilities;
     private SettingListType settingList;
@@ -77,6 +83,9 @@ public class StartupBean extends PluginDataHolder {
         for (Map.Entry<String, String> entry : super.getSettings().entrySet()) {
             LOG.debug("Setting: KEY: {} , VALUE: {}", entry.getKey(), entry.getValue());
         }
+
+        LOG.info("Setting up scheduler service for Folder listening..");
+        timerServBean.setUpScheduler(workLoader.getSchedulerConfig());
 
         LOG.info("PLUGIN STARTED");
     }

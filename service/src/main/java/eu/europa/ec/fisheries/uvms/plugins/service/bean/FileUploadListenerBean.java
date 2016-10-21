@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.plugins.service.bean;
 import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
 import eu.europa.ec.fisheries.uvms.plugins.exception.ResponseMappingException;
+import eu.europa.ec.fisheries.uvms.plugins.service.FileUploadListener;
 import eu.europa.ec.fisheries.uvms.plugins.service.ModuleWorkConfiguration;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -21,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.jms.JMSException;
 import java.io.File;
@@ -31,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -39,10 +38,11 @@ import java.util.Set;
 /**
  * Created by kovian on 13/10/2016.
  */
-@Singleton
 @Startup
+@Singleton
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @DependsOn(value = {"UploadExchangeServiceBean", "WorkFlowsLoaderBean"})
-public class FileUploadListenerBean {
+public class FileUploadListenerBean implements FileUploadListener {
 
     @EJB
     UploadExchangeServiceBean exchangeMessageProcucer;
@@ -50,12 +50,7 @@ public class FileUploadListenerBean {
     @EJB
     WorkFlowsLoaderBean workLoader;
 
-    @Resource
-    private TimerService timerServ;
-
-    private static final String FA_XML_FILES_UPLOAD_LISTENER_TIMER = "FAXMLFilesTimerService";
-    private static final TimerConfig TIMER_CONFIG                  = new TimerConfig(FA_XML_FILES_UPLOAD_LISTENER_TIMER, false);
-    private final static Logger LOG                                = LoggerFactory.getLogger(FileUploadListenerBean.class);
+    private static final Logger LOG   = LoggerFactory.getLogger(FileUploadListenerBean.class);
 
     /**
      * Sets up the scheduler and checks for the existence of the 'needed for work' directories.
@@ -63,20 +58,20 @@ public class FileUploadListenerBean {
      */
     @PostConstruct
     private void init(){
-        setUpScheduler(workLoader.getSchedulerConfig());
         Set<ModuleWorkConfiguration> works = workLoader.getWorks();
-        LOG.info("\n\n--- THE UPLOADER MODULE WILL BE LISTENING TO SCHEDULED WORKS UNDER THE MAIN DIR : {}",workLoader.getMainDir());
+        LOG.info("\n\n--- THE UPLOADER MODULE WILL BE LISTENING TO SCHEDULED WORKS UNDER THE MAIN DIR : "+workLoader.getMainDir()+"\n");
         if(CollectionUtils.isNotEmpty(works)){
             checkWorkingDirectoriesExistence(works);
             logWorks(works);
         } else {
             LOG.warn("No folder has been scheduled for listening for any module in Uploader. Check 'config.properties' file in Uploader module.");
+            return;
         }
         controlDirectoriesForNewFiles();
     }
 
     private void logWorks(Set<ModuleWorkConfiguration> works) {
-        LOG.info("\n\n There have been scheduled directory listeners for ::::::::::::: [[ "+works.size()+" ]] ::::::::: modules.\n\n");
+        LOG.info("\n\n There have been scheduled directory listeners for ::::::::::::: [[ "+works.size()+" ]] ::::::::: modules.\n");
         for(ModuleWorkConfiguration work : works){
             LOG.info("\n\n ********************************************************************************************************\n");
             LOG.info("Working directories for module : "+work.getModuleName());
@@ -88,18 +83,19 @@ public class FileUploadListenerBean {
 
 
     /**
-     * Controls for files in the configured directories for each ModuleWork every FIXED_SCHED_CONFIGURATION seconds.
+     * Controls for files in the configured directories for each ModuleWork every scheduler_config seconds.
      * If some found :
      *              1. if file is supported by the module then puts them in the configured work flow.
      *              2. if file is not supported by the module it gets 'thrown' in the refused foledr.
+     *
+     * @return worksHaveBeen found
      */
-    @Timeout
-    private void controlDirectoriesForNewFiles() {
+    @Override
+    public boolean controlDirectoriesForNewFiles() {
         Set<ModuleWorkConfiguration> works = workLoader.getWorks();
         if(CollectionUtils.isEmpty(works)){
             LOG.warn("Uploader did not find any scheduled for 'file drop listening' configurations! Canceling all previous scheduling for the uploader.");
-            cancelPreviousTimer();
-            return;
+            return false;
         }
         for(ModuleWorkConfiguration workConfig : works){
             Set<File> filesList = getCleanFilesList(workConfig);
@@ -107,15 +103,16 @@ public class FileUploadListenerBean {
                 readAndSendFilestToDestination(filesList, workConfig);
             }
         }
+        return true;
     }
 
     private void readAndSendFilestToDestination(Set<File> filesList, ModuleWorkConfiguration workConfig) {
         for(File actualFile : filesList){
-            String strXML = null;
+            String fileAsStr = null;
             try {
                 LOG.info("\n\n-->>>> Found new File in the upload Dir of : "+workConfig.getModuleName()+" Module.. With File name : "+actualFile.getAbsolutePath());
-                strXML = readFile(actualFile.getPath(), StandardCharsets.UTF_8);
-                exchangeMessageProcucer.sendMessageToExchange(strXML, workConfig.getModuleName());
+                fileAsStr = readFile(actualFile.getPath(), StandardCharsets.UTF_8);
+                exchangeMessageProcucer.sendMessageToExchange(fileAsStr, workConfig.getModuleName());
                 LOG.info("\n\n-->>>> Finished reading/sending to the work flow and moving the found file : "+actualFile.getAbsolutePath()+" Module..");
                 renameAndMoveFile(actualFile, workConfig.getProcessedDirectory());
             } catch (IOException | ResponseMappingException | JMSException e) {
@@ -181,7 +178,7 @@ public class FileUploadListenerBean {
         File folder             = new File(uploadDir);
         File[] listOfFiles      = folder.listFiles();
         if(listOfFiles == null){
-            listOfFiles = new File[0];
+            return null;
         }
         Set<String> moduleSupportedFiles = workConfig.getSupportedFiles();
         Set<File> filesList  = new HashSet<>();
@@ -294,54 +291,6 @@ public class FileUploadListenerBean {
         return new String(encoded, encoding);
     }
 
-    /**
-     * Given the schedulerExpressionStr creates a new timer for this bean.
-     *
-     * @param schedulerExpressionStr
-     */
-    private void setUpScheduler(String schedulerExpressionStr) throws IllegalArgumentException {
-        try{
-            // Parse the Cron-Job expression;
-            ScheduleExpression expression = parseExpression(schedulerExpressionStr);
-            // Firstly, we need to cancel the current timer, if already exists one;
-            cancelPreviousTimer();
-            // Set up the new timer for this EJB;
-            timerServ.createCalendarTimer(expression, TIMER_CONFIG);;
-        } catch(IllegalArgumentException ex){
-            LOG.warn("Error creating new scheduled synchronization timer!", ex);
-            throw ex;
-        }
-        LOG.info("New timer scheduler for listening to FA_XML_DIRECTORY_PATH created successfully : ", schedulerExpressionStr);
-    }
 
-    /**
-     * Cancels the previous set up of the timer for this bean.
-     *
-     */
-    private void cancelPreviousTimer() {
-        Collection<Timer> allTimers = timerServ.getTimers();
-        for (Timer currentTimer: allTimers) {
-            if (TIMER_CONFIG.getInfo().equals(currentTimer.getInfo())) {
-                currentTimer.cancel();
-                LOG.info("Current FA_XML scheduler timer cancelled.");
-                break;
-            }
-        }
-    }
-
-    /**
-     * Creates a ScheduleExpression object with the given schedulerExpressionStr String expression.
-     *
-     * @param schedulerExpressionStr
-     * @return
-     */
-    private ScheduleExpression parseExpression(String schedulerExpressionStr) {
-        ScheduleExpression expression = new ScheduleExpression();
-        String[] args = schedulerExpressionStr.split("\\s");
-        if (args.length != 6) {
-            throw new IllegalArgumentException("Invalid scheduler expression: " + schedulerExpressionStr);
-        }
-        return expression.second(args[0]).minute(args[1]).hour(args[2]).dayOfMonth(args[3]).month(args[4]).year(args[5]);
-    }
 
 }

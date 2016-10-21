@@ -5,6 +5,8 @@ package eu.europa.ec.fisheries.uvms.plugins.constants;
  */
 public class UploaderConstants {
 
+    public static final String FILES_UPLOAD_LISTENER_TIMER = "UploaderFilesTimerService";
+
     public static final String MORE_CONFIGURATION_IS_NEEDED = ". More configuration in needed (config.properties file).";
 
     public static final String SUPPORTED_MODULES_KEY          = "uploader.supported.modules";

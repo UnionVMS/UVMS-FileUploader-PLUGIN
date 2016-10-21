@@ -73,9 +73,7 @@
     
     
     </dependencies>
-    
-    
-	
+
     <distributionManagement>
         <repository>
             <id>digit-releases</id>

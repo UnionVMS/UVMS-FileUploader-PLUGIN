@@ -57,8 +57,7 @@ public class JAXBMarshaller {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             StringWriter sw = new StringWriter();
             marshaller.marshal(data, sw);
-            String marshalled = sw.toString();
-            return marshalled;
+            return sw.toString();
         } catch (JAXBException ex) {
             LOG.error(ERROR_DURING_UNMARSHALLING_IN_UPLOADER_MODULE,ex);
             throw new ExchangeModelMarshallException("[ Error when marshalling Object to String ]");

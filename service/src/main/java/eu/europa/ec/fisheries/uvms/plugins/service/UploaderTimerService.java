@@ -7,5 +7,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface UploaderTimerService {
-    void setUpScheduler(String schedulerExpressionStr) throws IllegalArgumentException;
+    void setUpScheduler(String schedulerExpressionStr);
 }

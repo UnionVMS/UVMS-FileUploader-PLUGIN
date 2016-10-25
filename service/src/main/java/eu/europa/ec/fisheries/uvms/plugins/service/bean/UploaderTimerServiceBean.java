@@ -41,7 +41,7 @@ public class UploaderTimerServiceBean implements UploaderTimerService {
      * @param schedulerExpressionStr
      */
     @Override
-    public void setUpScheduler(String schedulerExpressionStr) throws IllegalArgumentException {
+    public void setUpScheduler(String schedulerExpressionStr) {
         ScheduleExpression expression;
         try {
             // Parse the Cron-Job expression;

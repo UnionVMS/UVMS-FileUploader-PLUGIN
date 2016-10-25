@@ -36,7 +36,7 @@ public class StartupBean extends PluginDataHolder {
     private boolean isEnabled                    = false;
     private boolean waitingForResponse           = false;
     private int numberOfTriesExecuted            = 0;
-    private String REGISTER_CLASS_NAME           = StringUtils.EMPTY;
+    private String registeredClassName           = StringUtils.EMPTY;
 
     private static final String FAILED_TO_GET_SETTING_FOR_KEY = "Failed to getSetting for key: ";
     private static final String FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO = "Failed to send unregistration message to {}";
@@ -62,7 +62,7 @@ public class StartupBean extends PluginDataHolder {
 
         //This must be loaded first!!! Not doing that will end in dire problems later on!
         super.setPluginApplicaitonProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PLUGIN_PROPERTIES_KEY));
-        REGISTER_CLASS_NAME = getPLuginApplicationProperty("application.groupid");
+        registeredClassName = getPLuginApplicationProperty("application.groupid");
 
         //Theese can be loaded in any order
         super.setPluginProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PROPERTIES_KEY));
@@ -83,7 +83,7 @@ public class StartupBean extends PluginDataHolder {
 
         register();
 
-        LOG.debug("Settings updated in plugin {}", REGISTER_CLASS_NAME);
+        LOG.debug("Settings updated in plugin {}", registeredClassName);
         for (Map.Entry<String, String> entry : super.getSettings().entrySet()) {
             LOG.debug("Setting: KEY: {} , VALUE: {}", entry.getKey(), entry.getValue());
         }
@@ -149,7 +149,7 @@ public class StartupBean extends PluginDataHolder {
     }
 
     public String getRegisterClassName() {
-        return REGISTER_CLASS_NAME;
+        return registeredClassName;
     }
 
     public String getApplicationName() {
@@ -158,8 +158,8 @@ public class StartupBean extends PluginDataHolder {
 
     public String getSetting(String key) {
         try {
-            LOG.debug("Trying to get setting {} ", REGISTER_CLASS_NAME + UploaderConstants.DOT + key);
-            return super.getSettings().get(REGISTER_CLASS_NAME + UploaderConstants.DOT + key);
+            LOG.debug("Trying to get setting {} ", registeredClassName + UploaderConstants.DOT + key);
+            return super.getSettings().get(registeredClassName + UploaderConstants.DOT + key);
         } catch (Exception e) {
             LOG.error(FAILED_TO_GET_SETTING_FOR_KEY,key, getRegisterClassName(),e);
             return null;

@@ -13,7 +13,6 @@ package eu.europa.ec.fisheries.uvms.plugins.service.bean;
 import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
 import eu.europa.ec.fisheries.uvms.plugins.exception.UploaderConfigurationException;
 import eu.europa.ec.fisheries.uvms.plugins.properties.bean.PropertiesLoaderServiceBean;
-import eu.europa.ec.fisheries.uvms.plugins.service.ModuleWorkConfiguration;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.lang3.StringUtils;
 

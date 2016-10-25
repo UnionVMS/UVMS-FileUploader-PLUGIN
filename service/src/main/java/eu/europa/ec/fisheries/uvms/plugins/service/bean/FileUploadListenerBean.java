@@ -13,7 +13,6 @@ package eu.europa.ec.fisheries.uvms.plugins.service.bean;
 import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
 import eu.europa.ec.fisheries.uvms.plugins.service.FileUploadListener;
-import eu.europa.ec.fisheries.uvms.plugins.service.ModuleWorkConfiguration;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;

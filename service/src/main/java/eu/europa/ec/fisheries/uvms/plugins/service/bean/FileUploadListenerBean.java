@@ -12,7 +12,6 @@ package eu.europa.ec.fisheries.uvms.plugins.service.bean;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
-import eu.europa.ec.fisheries.uvms.plugins.exception.ResponseMappingException;
 import eu.europa.ec.fisheries.uvms.plugins.service.FileUploadListener;
 import eu.europa.ec.fisheries.uvms.plugins.service.ModuleWorkConfiguration;
 import org.apache.commons.collections.CollectionUtils;
@@ -115,7 +114,7 @@ public class FileUploadListenerBean implements FileUploadListener {
                 exchangeMessageProcucer.sendMessageToExchange(fileAsStr, workConfig.getModuleName());
                 LOG.info("\n\n-->>>> Finished reading/sending to the work flow and moving the found file : "+actualFile.getAbsolutePath()+" Module..");
                 renameAndMoveFile(actualFile, workConfig.getProcessedDirectory());
-            } catch (IOException | ResponseMappingException | JMSException e) {
+            } catch (IOException | JMSException e) {
                 LOG.error("Couldn't read/move or send file to Exchange module. See stackTrace for more details : ",e);
                 LOG.error("\n\nThe file  : ["+actualFile.getAbsolutePath()+"] will be moved to configured Failed directory..\n\n");
                 try {

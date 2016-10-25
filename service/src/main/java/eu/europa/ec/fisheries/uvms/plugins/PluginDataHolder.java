@@ -9,6 +9,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  *
@@ -16,9 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class PluginDataHolder {
 
-    public final static String PLUGIN_PROPERTIES = "uploader.properties";
-    public final static String PROPERTIES = "settings.properties";
-    public final static String CAPABILITIES = "capabilities.properties";
+    public static final String PLUGIN_PROPERTIES_KEY  = "uploader.properties";
+    public static final String PROPERTIES_KEY         = "settings.properties";
+    public static final String CAPABILITIES_PROPS_KEY = "capabilities.properties";
 
     private Properties uploaderApplicaitonProperties;
     private Properties uploaderProperties;
@@ -28,38 +29,30 @@ public abstract class PluginDataHolder {
     private final ConcurrentHashMap<String, String> capabilities = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, SetReportMovementType> cachedMovement = new ConcurrentHashMap<>();
 
-    public ConcurrentHashMap<String, String> getSettings() {
+    public ConcurrentMap<String, String> getSettings() {
         return settings;
     }
-
-    public ConcurrentHashMap<String, String> getCapabilities() {
+    public ConcurrentMap<String, String> getCapabilities() {
         return capabilities;
     }
-
-    public ConcurrentHashMap<String, SetReportMovementType> getCachedMovement() {
+    public ConcurrentMap<String, SetReportMovementType> getCachedMovement() {
         return cachedMovement;
     }
-
     public Properties getPluginApplicaitonProperties() {
         return uploaderApplicaitonProperties;
     }
-
     public void setPluginApplicaitonProperties(Properties uploaderApplicaitonProperties) {
         this.uploaderApplicaitonProperties = uploaderApplicaitonProperties;
     }
-
     public Properties getPluginProperties() {
         return uploaderProperties;
     }
-
     public void setPluginProperties(Properties uploaderProperties) {
         this.uploaderProperties = uploaderProperties;
     }
-
     public Properties getPluginCapabilities() {
         return uploaderCapabilities;
     }
-
     public void setPluginCapabilities(Properties uploaderCapabilities) {
         this.uploaderCapabilities = uploaderCapabilities;
     }

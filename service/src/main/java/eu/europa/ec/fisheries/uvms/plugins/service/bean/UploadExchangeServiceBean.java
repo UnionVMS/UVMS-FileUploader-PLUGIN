@@ -32,12 +32,12 @@ import javax.jms.JMSException;
 @LocalBean
 public class UploadExchangeServiceBean {
 
-	final static Logger LOG = LoggerFactory.getLogger(UploadExchangeServiceBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(UploadExchangeServiceBean.class);
 
 	@EJB
 	PluginMessageProducer producer;
 
-	public void sendMessageToExchange(String textFromUploadedFile, String moduleName) throws JMSException, ResponseMappingException {
+	public void sendMessageToExchange(String textFromUploadedFile, String moduleName) throws JMSException {
 		try {
 			String faRequest = getTextMessageStringForModule(textFromUploadedFile, moduleName.toUpperCase());
 			String messageId = producer.sendModuleMessage(faRequest, ModuleQueue.EXCHANGE);
@@ -47,7 +47,7 @@ public class UploadExchangeServiceBean {
 			throw e;
 		} catch (ResponseMappingException e) {
 			LOG.error("Couldn't map textFromUploadedFile to SetFLUXMDRSyncMessageResponse", e);
-			throw e;
+			throw new JMSException(e.getMessage());
 		}
 	}
 
@@ -64,7 +64,7 @@ public class UploadExchangeServiceBean {
 		switch(moduleName){
 			case UploaderConstants.FISHING_ACTIVITY_MODULE_NAME :
 				try {
-					reqStr = ExchangeModuleRequestMapper.createFluxFAManualResponseRequest(message, "flux");
+					reqStr = ExchangeModuleRequestMapper.createFluxFAManualResponseRequest(message, UploaderConstants.FLUX_USER_NAME);
 				} catch (ExchangeModelMarshallException e) {
 					throw new ResponseMappingException(e);
 				}

@@ -53,7 +53,7 @@ public class PluginMessageProducer {
             session.createProducer(requestMessage.getJMSReplyTo()).send(message);
 
         } catch (JMSException e) {
-            LOG.error("[ Error when sending jms message. ] {}", e.getMessage());
+            LOG.error("[ Error when sending jms message. ] {}", e);
             throw new JMSException(e.getMessage());
         } finally {
             disconnectQueue();

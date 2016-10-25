@@ -29,6 +29,12 @@ public class JAXBMarshaller {
     public static final String UNMARSHALLING_TIME = "Unmarshalling time: {}";
     public static final String ERROR_WHEN_UNMARSHALLING_RESPONSE_IN_RESPONSE_MAPPER = "[Error when unmarshalling response in ResponseMapper ]";
     public static final String ERROR_DURING_UNMARSHALLING_IN_UPLOADER_MODULE = "Error during unmarshalling in Uploader module ";
+
+
+    private JAXBMarshaller(){
+        super();
+    }
+
     /**
      * Marshalls a JAXB Object to a XML String representation
      *

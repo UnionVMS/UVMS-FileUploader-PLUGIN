@@ -44,15 +44,12 @@ public class ModuleWorkConfiguration {
     public String getUploadDirectory(){
         return moduleDirectories.get(UploaderConstants.UPLOAD);
     }
-
     public String getProcessedDirectory(){
         return moduleDirectories.get(UploaderConstants.PROCESSED);
     }
-
     public String getRefusedDirectory(){
         return moduleDirectories.get(UploaderConstants.REFUSED);
     }
-
     public String getFailedDirectory() {
         return moduleDirectories.get(UploaderConstants.FAILED);
     }

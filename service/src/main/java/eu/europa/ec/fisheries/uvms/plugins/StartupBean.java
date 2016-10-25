@@ -7,6 +7,7 @@ import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
 import eu.europa.ec.fisheries.uvms.plugins.mapper.ServiceMapper;
 import eu.europa.ec.fisheries.uvms.plugins.producer.PluginMessageProducer;
 import eu.europa.ec.fisheries.uvms.plugins.service.UploaderTimerService;
@@ -37,6 +38,9 @@ public class StartupBean extends PluginDataHolder {
     private int numberOfTriesExecuted            = 0;
     private String REGISTER_CLASS_NAME           = StringUtils.EMPTY;
 
+    private static final String FAILED_TO_GET_SETTING_FOR_KEY = "Failed to getSetting for key: ";
+    private static final String FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO = "Failed to send unregistration message to {}";
+
     @EJB
     private PluginMessageProducer messageProducer;
 
@@ -57,12 +61,12 @@ public class StartupBean extends PluginDataHolder {
     public void startup() {
 
         //This must be loaded first!!! Not doing that will end in dire problems later on!
-        super.setPluginApplicaitonProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PLUGIN_PROPERTIES));
+        super.setPluginApplicaitonProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PLUGIN_PROPERTIES_KEY));
         REGISTER_CLASS_NAME = getPLuginApplicationProperty("application.groupid");
 
         //Theese can be loaded in any order
-        super.setPluginProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PROPERTIES));
-        super.setPluginCapabilities(fileHandler.getPropertiesFromFile(PluginDataHolder.CAPABILITIES));
+        super.setPluginProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PROPERTIES_KEY));
+        super.setPluginCapabilities(fileHandler.getPropertiesFromFile(PluginDataHolder.CAPABILITIES_PROPS_KEY));
 
         ServiceMapper.mapToMapFromProperties(super.getSettings(), super.getPluginProperties(), getRegisterClassName());
         ServiceMapper.mapToMapFromProperties(super.getCapabilities(), super.getPluginCapabilities(), null);
@@ -72,8 +76,8 @@ public class StartupBean extends PluginDataHolder {
 
         serviceType = ServiceMapper.getServiceType(
                 getRegisterClassName(),
-                getApplicaionName(),
-                "A good description for the plugin",
+                getApplicationName(),
+                "Plugin for listeing to folder for files containing data that should be sent to the flow manually.",
                 PluginType.SATELLITE_RECEIVER,
                 getPluginResponseSubscriptionName());
 
@@ -111,7 +115,7 @@ public class StartupBean extends PluginDataHolder {
             String registerServiceRequest = ExchangeModuleRequestMapper.createRegisterServiceRequest(serviceType, plugInCapabilities, settingList);
             messageProducer.sendEventBusMessage(registerServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (JMSException | ExchangeModelMarshallException e) {
-            LOG.error("Failed to send registration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
+            LOG.error(FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
             setWaitingForResponse(false);
         }
 
@@ -123,7 +127,7 @@ public class StartupBean extends PluginDataHolder {
             String unregisterServiceRequest = ExchangeModuleRequestMapper.createUnregisterServiceRequest(serviceType);
              messageProducer.sendEventBusMessage(unregisterServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (JMSException | ExchangeModelMarshallException e) {
-            LOG.error("Failed to send unregistration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
+            LOG.error(FAILED_TO_SEND_UNREGISTRATION_MESSAGE_TO, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
         }
     }
 
@@ -131,7 +135,7 @@ public class StartupBean extends PluginDataHolder {
         try {
             return (String) super.getPluginApplicaitonProperties().get(key);
         } catch (Exception e) {
-            LOG.error("Failed to getSetting for key: ",key, getRegisterClassName(),e);
+            LOG.error(FAILED_TO_GET_SETTING_FOR_KEY,key, getRegisterClassName(),e);
             return null;
         }
     }
@@ -148,16 +152,16 @@ public class StartupBean extends PluginDataHolder {
         return REGISTER_CLASS_NAME;
     }
 
-    public String getApplicaionName() {
+    public String getApplicationName() {
         return getSetting("application.name");
     }
 
     public String getSetting(String key) {
         try {
-            LOG.debug("Trying to get setting {} ", REGISTER_CLASS_NAME + "." + key);
-            return super.getSettings().get(REGISTER_CLASS_NAME + "." + key);
+            LOG.debug("Trying to get setting {} ", REGISTER_CLASS_NAME + UploaderConstants.DOT + key);
+            return super.getSettings().get(REGISTER_CLASS_NAME + UploaderConstants.DOT + key);
         } catch (Exception e) {
-            LOG.error("Failed to getSetting for key: " + key, REGISTER_CLASS_NAME);
+            LOG.error(FAILED_TO_GET_SETTING_FOR_KEY,key, getRegisterClassName(),e);
             return null;
         }
     }

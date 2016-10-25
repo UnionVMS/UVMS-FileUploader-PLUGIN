@@ -7,6 +7,7 @@ package eu.europa.ec.fisheries.uvms.plugins.mapper;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.*;
+import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +18,15 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  *
- * @author jojoha
+ * @author akovi
  */
 public class ServiceMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceMapper.class);
+
+    private ServiceMapper(){
+        super();
+    }
 
     public static ServiceType getServiceType(String serviceClassName, String uploaderDisplayName, String description, PluginType uploaderType, String responseMessageName) {
 
@@ -61,13 +66,11 @@ public class ServiceMapper {
         while (itr.hasNext()) {
             Map.Entry<String, String> tmp = itr.next();
             CapabilityType setting = new CapabilityType();
-
             try {
                 setting.setType(CapabilityTypeType.valueOf(tmp.getKey()));
             } catch (Exception e) {
-                LOG.error("Error when parsing to Enum type from String KEY: {}", tmp.getKey());
+                LOG.error("Error when parsing to Enum type from String KEY: {}", tmp.getKey(),e);
             }
-
             setting.setValue(tmp.getValue());
             capabilityListType.getCapability().add(setting);
         }
@@ -75,13 +78,14 @@ public class ServiceMapper {
     }
 
     public static void mapToMapFromProperties(ConcurrentMap<String, String> map, Properties props, String registerClassName) {
-        for (Object col : props.keySet()) {
-            if (col.getClass().isAssignableFrom(String.class)) {
-                String keyString = (String) col;
+        for (Map.Entry entrySet : props.entrySet()) {
+            Object key = entrySet.getKey();
+            if (key.getClass().isAssignableFrom(String.class)) {
+                String keyString = (String) key;
                 if (registerClassName != null) {
-                    keyString = registerClassName.concat("." + keyString);
+                    keyString = registerClassName.concat(UploaderConstants.DOT + keyString);
                 }
-                String valueString = (String) props.get(col);
+                String valueString = (String) entrySet.getValue();
                 map.put(keyString, valueString);
             }
         }

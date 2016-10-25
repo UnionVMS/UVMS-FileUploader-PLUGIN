@@ -36,7 +36,7 @@ public class PropertiesLoaderServiceBean {
     private CompositeConfiguration configProps;
     private AtomicInteger accessCount = new AtomicInteger(0);
 
-    private final static Logger LOG = LoggerFactory.getLogger(FileUploadListenerBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileUploadListenerBean.class);
 
     @PostConstruct
     public void startup() {

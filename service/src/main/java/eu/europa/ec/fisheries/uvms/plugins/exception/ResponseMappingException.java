@@ -5,7 +5,7 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 /**
  * Created by kovian on 17/10/2016.
  */
-public class ResponseMappingException extends Throwable {
+public class ResponseMappingException extends Exception {
     public ResponseMappingException(String s) {
         super(s);
     }

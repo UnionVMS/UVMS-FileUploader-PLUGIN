@@ -20,10 +20,15 @@ import java.util.Map;
  * Created by kovian on 06/09/2016.
  */
 public class JAXBMarshaller {
-    final static Logger LOG = LoggerFactory.getLogger(eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller.class);
 
     private static Map<String, JAXBContext> contexts = new HashMap<>();
 
+    public static final String STORED_CONTEXTS = "Stored contexts: {}";
+    public static final String JAXBCONTEXT_CREATION_TIME = "JAXBContext creation time: {}";
+    public static final String UNMARSHALLING_TIME = "Unmarshalling time: {}";
+    public static final String ERROR_WHEN_UNMARSHALLING_RESPONSE_IN_RESPONSE_MAPPER = "[Error when unmarshalling response in ResponseMapper ]";
+    public static final String ERROR_DURING_UNMARSHALLING_IN_UPLOADER_MODULE = "Error during unmarshalling in Uploader module ";
     /**
      * Marshalls a JAXB Object to a XML String representation
      *
@@ -39,8 +44,8 @@ public class JAXBMarshaller {
                 long before = System.currentTimeMillis();
                 jaxbContext = JAXBContext.newInstance(data.getClass());
                 contexts.put(data.getClass().getName(), jaxbContext);
-                LOG.debug("Stored contexts: {}", contexts.size());
-                LOG.debug("JAXBContext creation time: {}", (System.currentTimeMillis() - before));
+                LOG.debug(STORED_CONTEXTS, contexts.size());
+                LOG.debug(JAXBCONTEXT_CREATION_TIME, getTimeDifference(before));
             }
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -49,6 +54,7 @@ public class JAXBMarshaller {
             String marshalled = sw.toString();
             return marshalled;
         } catch (JAXBException ex) {
+            LOG.error(ERROR_DURING_UNMARSHALLING_IN_UPLOADER_MODULE,ex);
             throw new ExchangeModelMarshallException("[ Error when marshalling Object to String ]");
         }
     }
@@ -70,18 +76,19 @@ public class JAXBMarshaller {
                 long before = System.currentTimeMillis();
                 jc = JAXBContext.newInstance(clazz);
                 contexts.put(clazz.getName(), jc);
-                LOG.debug("Stored contexts: {}", contexts.size());
-                LOG.debug("JAXBContext creation time: {}", (System.currentTimeMillis() - before));
+                LOG.debug(STORED_CONTEXTS, contexts.size());
+                LOG.debug(JAXBCONTEXT_CREATION_TIME, getTimeDifference(before));
             }
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             StringReader sr = new StringReader(textMessage.getText());
             StreamSource source = new StreamSource(sr);
             long before = System.currentTimeMillis();
             R object = (R) unmarshaller.unmarshal(source);
-            LOG.debug("Unmarshalling time: {}", (System.currentTimeMillis() - before));
+            LOG.debug(UNMARSHALLING_TIME, getTimeDifference(before));
             return object;
         } catch (JMSException | JAXBException | NullPointerException ex) {
-            throw new ExchangeModelMarshallException("[Error when unmarshalling response in ResponseMapper ]");
+            LOG.error(ERROR_DURING_UNMARSHALLING_IN_UPLOADER_MODULE,ex);
+            throw new ExchangeModelMarshallException(ERROR_WHEN_UNMARSHALLING_RESPONSE_IN_RESPONSE_MAPPER);
         }
     }
 
@@ -93,19 +100,24 @@ public class JAXBMarshaller {
                 long before = System.currentTimeMillis();
                 jc = JAXBContext.newInstance(clazz);
                 contexts.put(clazz.getName(), jc);
-                LOG.debug("Stored contexts: {}", contexts.size());
-                LOG.debug("JAXBContext creation time: {}", (System.currentTimeMillis() - before));
+                LOG.debug(STORED_CONTEXTS, contexts.size());
+                LOG.debug(JAXBCONTEXT_CREATION_TIME, getTimeDifference(before));
             }
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             StringReader sr = new StringReader(textMessage);
             StreamSource source = new StreamSource(sr);
             long before = System.currentTimeMillis();
             R object = (R) unmarshaller.unmarshal(source);
-            LOG.debug("Unmarshalling time: {}", (System.currentTimeMillis() - before));
+            LOG.debug(UNMARSHALLING_TIME, getTimeDifference(before));
             return object;
         } catch (JAXBException | NullPointerException ex) {
-            throw new ExchangeModelMarshallException("[Error when unmarshalling response in ResponseMapper ]");
+            LOG.error(ERROR_DURING_UNMARSHALLING_IN_UPLOADER_MODULE,ex);
+            throw new ExchangeModelMarshallException(ERROR_WHEN_UNMARSHALLING_RESPONSE_IN_RESPONSE_MAPPER);
         }
+    }
+
+    private static long getTimeDifference(long before) {
+        return System.currentTimeMillis() - before;
     }
 
 }

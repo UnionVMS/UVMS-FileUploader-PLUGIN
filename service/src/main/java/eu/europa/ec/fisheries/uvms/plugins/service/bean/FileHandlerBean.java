@@ -22,7 +22,7 @@ import java.util.Properties;
 @Singleton
 public class FileHandlerBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(FileHandlerBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileHandlerBean.class);
 
     public Properties getPropertiesFromFile(String fileName) {
         Properties props = new Properties();
@@ -30,7 +30,7 @@ public class FileHandlerBean {
             InputStream inputStream = FileHandlerBean.class.getClassLoader().getResourceAsStream(fileName);
             props.load(inputStream);
         } catch (IOException e) {
-            LOG.debug("Properties file failed to load");
+            LOG.debug("Properties file failed to load", e);
         }
         return props;
     }

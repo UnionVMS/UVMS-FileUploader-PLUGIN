@@ -28,9 +28,9 @@ import java.util.Map;
 @DependsOn({"PluginMessageProducer", "FileHandlerBean", "UploaderTimerServiceBean", "WorkFlowsLoaderBean"})
 public class StartupBean extends PluginDataHolder {
 
-    final static Logger LOG = LoggerFactory.getLogger(StartupBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StartupBean.class);
 
-    private final static int MAX_NUMBER_OF_TRIES = 10;
+    private static final int MAX_NUMBER_OF_TRIES = 10;
     private boolean isRegistered                 = false;
     private boolean isEnabled                    = false;
     private boolean waitingForResponse           = false;
@@ -38,18 +38,18 @@ public class StartupBean extends PluginDataHolder {
     private String REGISTER_CLASS_NAME           = StringUtils.EMPTY;
 
     @EJB
-    PluginMessageProducer messageProducer;
+    private PluginMessageProducer messageProducer;
 
     @EJB
-    FileHandlerBean fileHandler;
+    private FileHandlerBean fileHandler;
 
     @EJB
-    UploaderTimerService timerServBean;
+    private UploaderTimerService timerServBean;
 
     @EJB
-    WorkFlowsLoaderBean workLoader;
+    private WorkFlowsLoaderBean workLoader;
 
-    private CapabilityListType capabilities;
+    private CapabilityListType plugInCapabilities;
     private SettingListType settingList;
     private ServiceType serviceType;
 
@@ -67,7 +67,7 @@ public class StartupBean extends PluginDataHolder {
         ServiceMapper.mapToMapFromProperties(super.getSettings(), super.getPluginProperties(), getRegisterClassName());
         ServiceMapper.mapToMapFromProperties(super.getCapabilities(), super.getPluginCapabilities(), null);
 
-        capabilities = ServiceMapper.getCapabilitiesListTypeFromMap(super.getCapabilities());
+        plugInCapabilities = ServiceMapper.getCapabilitiesListTypeFromMap(super.getCapabilities());
         settingList = ServiceMapper.getSettingsListTypeFromMap(super.getSettings());
 
         serviceType = ServiceMapper.getServiceType(
@@ -108,10 +108,10 @@ public class StartupBean extends PluginDataHolder {
         LOG.info("Registering to Exchange Module");
         setWaitingForResponse(true);
         try {
-            String registerServiceRequest = ExchangeModuleRequestMapper.createRegisterServiceRequest(serviceType, capabilities, settingList);
-            String correlationId = messageProducer.sendEventBusMessage(registerServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
+            String registerServiceRequest = ExchangeModuleRequestMapper.createRegisterServiceRequest(serviceType, plugInCapabilities, settingList);
+            messageProducer.sendEventBusMessage(registerServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (JMSException | ExchangeModelMarshallException e) {
-            LOG.error("Failed to send registration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
+            LOG.error("Failed to send registration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
             setWaitingForResponse(false);
         }
 
@@ -121,9 +121,9 @@ public class StartupBean extends PluginDataHolder {
         LOG.info("Unregistering from Exchange Module");
         try {
             String unregisterServiceRequest = ExchangeModuleRequestMapper.createUnregisterServiceRequest(serviceType);
-            String correlationId = messageProducer.sendEventBusMessage(unregisterServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
+             messageProducer.sendEventBusMessage(unregisterServiceRequest, ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
         } catch (JMSException | ExchangeModelMarshallException e) {
-            LOG.error("Failed to send unregistration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE);
+            LOG.error("Failed to send unregistration message to {}", ExchangeModelConstants.EXCHANGE_REGISTER_SERVICE,e);
         }
     }
 
@@ -131,7 +131,7 @@ public class StartupBean extends PluginDataHolder {
         try {
             return (String) super.getPluginApplicaitonProperties().get(key);
         } catch (Exception e) {
-            LOG.error("Failed to getSetting for key: " + key, getRegisterClassName());
+            LOG.error("Failed to getSetting for key: ",key, getRegisterClassName(),e);
             return null;
         }
     }

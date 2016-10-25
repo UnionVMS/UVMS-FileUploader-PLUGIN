@@ -45,10 +45,10 @@ import java.util.Set;
 public class FileUploadListenerBean implements FileUploadListener {
 
     @EJB
-    UploadExchangeServiceBean exchangeMessageProcucer;
+    private UploadExchangeServiceBean exchangeMessageProcucer;
 
     @EJB
-    WorkFlowsLoaderBean workLoader;
+    private WorkFlowsLoaderBean workLoader;
 
     private static final Logger LOG   = LoggerFactory.getLogger(FileUploadListenerBean.class);
 
@@ -123,7 +123,7 @@ public class FileUploadListenerBean implements FileUploadListener {
                     renameAndMoveFile(actualFile, workConfig.getFailedDirectory());
                     LOG.info("File moved successfully to Failed directory!");
                 } catch (IOException e1) {
-                    LOG.error("Couldn't move file to FAILED directory : ",e);
+                    LOG.error("Couldn't move file to FAILED directory : ",e1);
                 }
             }
 
@@ -178,7 +178,7 @@ public class FileUploadListenerBean implements FileUploadListener {
         File folder             = new File(uploadDir);
         File[] listOfFiles      = folder.listFiles();
         if(listOfFiles == null){
-            return null;
+            return new HashSet<>();
         }
         Set<String> moduleSupportedFiles = workConfig.getSupportedFiles();
         Set<File> filesList  = new HashSet<>();
@@ -286,7 +286,7 @@ public class FileUploadListenerBean implements FileUploadListener {
      * @return
      * @throws IOException
      */
-    static String readFile(String path, Charset encoding) throws IOException {
+    private static String readFile(String path, Charset encoding) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
     }

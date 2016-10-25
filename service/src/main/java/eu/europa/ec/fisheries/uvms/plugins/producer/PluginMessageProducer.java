@@ -38,7 +38,7 @@ public class PluginMessageProducer {
     private Connection connection = null;
     private Session session = null;
 
-    final static Logger LOG = LoggerFactory.getLogger(PluginMessageProducer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PluginMessageProducer.class);
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendResponseMessage(String text, TextMessage requestMessage) throws JMSException {
@@ -76,7 +76,7 @@ public class PluginMessageProducer {
             }
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            LOG.error("[ Error when sending data source message. ] {}", e.getMessage());
+            LOG.error("[ Error when sending data source message. ]", e);
             throw new JMSException(e.getMessage());
         } finally {
             disconnectQueue();
@@ -96,7 +96,7 @@ public class PluginMessageProducer {
 
             return message.getJMSMessageID();
         } catch (JMSException e) {
-            LOG.error("[ Error when sending message. ] {0}", e.getMessage());
+            LOG.error("[ Error when sending message. ]", e);
             throw new JMSException(e.getMessage());
         } finally {
             disconnectQueue();
@@ -114,7 +114,7 @@ public class PluginMessageProducer {
             connection.stop();
             connection.close();
         } catch (JMSException e) {
-            LOG.error("[ Error when stopping or closing JMS queue. ] {}", e.getMessage(), e.getStackTrace());
+            LOG.error("[ Error when stopping or closing JMS queue. ]", e);
         }
     }
 }

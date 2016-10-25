@@ -75,7 +75,7 @@ public class WorkFlowsLoaderBean {
             supportedFiles = new HashSet<>((List<String>) props.getProperty(moduleName + UploaderConstants.DOT_UPLOAD_SUPPORTED_FILES_KEY));
         } catch (ClassCastException | NullPointerException ex) {
             throw new UploaderConfigurationException(UploaderConstants.NOT_CONFIGURED_SUPPORTED_FILES_FOR_MODULE
-                    + moduleName + UploaderConstants.MORE_CONFIGURATION_IS_NEEDED);
+                    + moduleName + UploaderConstants.MORE_CONFIGURATION_IS_NEEDED, ex);
         }
         return new ModuleWorkConfiguration(moduleName, directories, supportedFiles);
     }

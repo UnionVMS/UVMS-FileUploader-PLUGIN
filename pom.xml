@@ -4,7 +4,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
     <artifactId>uploader</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Plugin template</description>
 
@@ -110,7 +110,7 @@
 
     <scm>
         <connection>
-            scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/Exchange/PLUGIN/uploader/uploader-0.5.0-SNAPSHOT
+            scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/Modules/Exchange/PLUGIN/uploader
         </connection>
     </scm>
 

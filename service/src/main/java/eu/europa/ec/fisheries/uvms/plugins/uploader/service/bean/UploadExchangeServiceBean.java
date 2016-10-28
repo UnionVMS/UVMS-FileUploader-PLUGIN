@@ -8,14 +8,14 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
 
  */
-package eu.europa.ec.fisheries.uvms.plugins.service.bean;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.service.bean;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.plugins.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
-import eu.europa.ec.fisheries.uvms.plugins.exception.ResponseMappingException;
-import eu.europa.ec.fisheries.uvms.plugins.producer.PluginMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.constants.UploaderConstants;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.exception.ResponseMappingException;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.producer.PluginMessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

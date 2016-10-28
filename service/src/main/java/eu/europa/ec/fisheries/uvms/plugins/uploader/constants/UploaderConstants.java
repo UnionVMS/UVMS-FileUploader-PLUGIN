@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.constants;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.constants;
 
 /**
  * Created by kovian on 17/10/2016.

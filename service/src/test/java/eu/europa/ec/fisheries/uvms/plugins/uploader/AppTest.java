@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins;
+package eu.europa.ec.fisheries.uvms.plugins.uploader;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

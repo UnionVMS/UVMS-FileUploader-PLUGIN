@@ -8,9 +8,9 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
 
  */
-package eu.europa.ec.fisheries.uvms.plugins.properties.bean;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.properties.bean;
 
-import eu.europa.ec.fisheries.uvms.plugins.service.bean.FileUploadListenerBean;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.service.bean.FileUploadListenerBean;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;

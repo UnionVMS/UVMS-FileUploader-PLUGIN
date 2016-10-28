@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.europa.ec.fisheries.uvms.plugins.mapper;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.mapper;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.*;
-import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.constants.UploaderConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

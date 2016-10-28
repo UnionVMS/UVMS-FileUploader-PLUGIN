@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins;
+package eu.europa.ec.fisheries.uvms.plugins.uploader;
 
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.exchange.service.v1.CapabilityListType;
@@ -7,12 +7,12 @@ import eu.europa.ec.fisheries.schema.exchange.service.v1.SettingListType;
 import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
-import eu.europa.ec.fisheries.uvms.plugins.mapper.ServiceMapper;
-import eu.europa.ec.fisheries.uvms.plugins.producer.PluginMessageProducer;
-import eu.europa.ec.fisheries.uvms.plugins.service.UploaderTimerService;
-import eu.europa.ec.fisheries.uvms.plugins.service.bean.FileHandlerBean;
-import eu.europa.ec.fisheries.uvms.plugins.service.bean.WorkFlowsLoaderBean;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.constants.UploaderConstants;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.mapper.ServiceMapper;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.producer.PluginMessageProducer;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.service.UploaderTimerService;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.service.bean.FileHandlerBean;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.service.bean.WorkFlowsLoaderBean;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +61,12 @@ public class StartupBean extends PluginDataHolder {
     public void startup() {
 
         //This must be loaded first!!! Not doing that will end in dire problems later on!
-        super.setPluginApplicaitonProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PLUGIN_PROPERTIES_KEY));
+        super.setPluginApplicaitonProperties(fileHandler.getPropertiesFromFile(PLUGIN_PROPERTIES_KEY));
         registeredClassName = getPLuginApplicationProperty("application.groupid");
 
         //Theese can be loaded in any order
-        super.setPluginProperties(fileHandler.getPropertiesFromFile(PluginDataHolder.PROPERTIES_KEY));
-        super.setPluginCapabilities(fileHandler.getPropertiesFromFile(PluginDataHolder.CAPABILITIES_PROPS_KEY));
+        super.setPluginProperties(fileHandler.getPropertiesFromFile(PROPERTIES_KEY));
+        super.setPluginCapabilities(fileHandler.getPropertiesFromFile(CAPABILITIES_PROPS_KEY));
 
         ServiceMapper.mapToMapFromProperties(super.getSettings(), super.getPluginProperties(), getRegisterClassName());
         ServiceMapper.mapToMapFromProperties(super.getCapabilities(), super.getPluginCapabilities(), null);

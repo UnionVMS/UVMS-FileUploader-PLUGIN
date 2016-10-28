@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.mapper;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.mapper;
 
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import org.slf4j.Logger;

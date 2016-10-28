@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.europa.ec.fisheries.uvms.plugins.service.bean;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.service.bean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

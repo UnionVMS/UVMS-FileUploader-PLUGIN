@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.service;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.service;
 
 import javax.ejb.Local;
 

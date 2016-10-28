@@ -1,8 +1,8 @@
-package eu.europa.ec.fisheries.uvms.plugins.service.bean;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.service.bean;
 
-import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
-import eu.europa.ec.fisheries.uvms.plugins.service.FileUploadListener;
-import eu.europa.ec.fisheries.uvms.plugins.service.UploaderTimerService;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.constants.UploaderConstants;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.service.FileUploadListener;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.service.UploaderTimerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

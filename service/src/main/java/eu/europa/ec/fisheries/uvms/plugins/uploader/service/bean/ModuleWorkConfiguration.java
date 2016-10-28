@@ -8,9 +8,9 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 details. You should have received a copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
 
  */
-package eu.europa.ec.fisheries.uvms.plugins.service.bean;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.service.bean;
 
-import eu.europa.ec.fisheries.uvms.plugins.constants.UploaderConstants;
+import eu.europa.ec.fisheries.uvms.plugins.uploader.constants.UploaderConstants;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;

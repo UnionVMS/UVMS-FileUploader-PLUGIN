@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.exception;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.exception;
 
 /**
  * Created by kovian on 14/10/2016.

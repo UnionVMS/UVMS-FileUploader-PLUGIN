@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.plugins.exception;
+package eu.europa.ec.fisheries.uvms.plugins.uploader.exception;
 
 import java.io.IOException;
 

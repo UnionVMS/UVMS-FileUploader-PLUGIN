@@ -28,17 +28,17 @@ public class ModuleWorkConfiguration {
     private Map<String, String> moduleDirectories;
     private Set<String> supportedFiles;
 
+    public ModuleWorkConfiguration(String moduleName, Map<String, String> moduleDirectories, Set<String> supportedFiles) {
+        this.moduleName = moduleName;
+        this.moduleDirectories = moduleDirectories;
+        this.supportedFiles = supportedFiles;
+    }
+
     @PostConstruct
     private void init(){
         moduleName = StringUtils.EMPTY;
         moduleDirectories = new HashMap<>();
         supportedFiles = new HashSet<>();
-    }
-
-    public ModuleWorkConfiguration(String moduleName, Map<String, String> moduleDirectories, Set<String> supportedFiles) {
-        this.moduleName = moduleName;
-        this.moduleDirectories = moduleDirectories;
-        this.supportedFiles = supportedFiles;
     }
 
     public String getUploadDirectory(){

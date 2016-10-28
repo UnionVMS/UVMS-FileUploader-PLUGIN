@@ -95,6 +95,7 @@
 
         </dependencies>
     </dependencyManagement>
+
     <distributionManagement>
         <repository>
             <id>digit-releases</id>

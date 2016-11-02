@@ -109,11 +109,11 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <scm>
-        <connection>
-            scm:svn:https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/branches/dev/Modules/Exchange/PLUGIN/uploader
-        </connection>
-    </scm>
+	<scm>
+	 <connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uploader.git</connection>
+	 <developerConnection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uploader.git</developerConnection>
+	 <url>https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
+	</scm>
 
     <build>
         <pluginManagement>
@@ -159,10 +159,6 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <providerImplementations>
-                        <svn>javasvn</svn>
-                    </providerImplementations>
-                    <tagBase>https://webgate.ec.europa.eu/CITnet/svn/UNIONVMS/tags/Exchange/PLUGIN/uploader</tagBase>
                     <tagNameFormat>${project.artifactId}-${project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>

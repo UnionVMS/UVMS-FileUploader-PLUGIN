@@ -4,7 +4,7 @@
 
     <groupId>eu.europa.ec.fisheries.uvms.plugins</groupId>
     <artifactId>uploader</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1</version>
     <packaging>pom</packaging>
     <description>Plugin template</description>
 
@@ -113,7 +113,8 @@
 	 <connection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uploader.git</connection>
 	 <developerConnection>scm:git:https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/uploader.git</developerConnection>
 	 <url>https://emkoviand@webgate.ec.europa.eu/CITnet/stash/scm/unionvms/</url>
-	</scm>
+	  <tag>uploader-0.5.1-SNAPSHOT</tag>
+  </scm>
 
     <build>
         <pluginManagement>
